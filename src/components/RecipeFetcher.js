@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import RecipeModal from './RecipeModal';
 
 const API_KEY = '580e029754ea4445846f4c514a2f4657';
 
@@ -9,6 +10,11 @@ const RecipeFetcher = ({ onFavorite, favorites }) => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewRecipe = (recipeId) => {
+    fetchRecipeDetails(recipeId);
+  };
 
   const fetchRecipes = async (query) => {
     setLoading(true);
@@ -34,6 +40,7 @@ const RecipeFetcher = ({ onFavorite, favorites }) => {
         `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}`
       );
       setSelectedRecipe(response.data);
+      setIsModalOpen(true);
     } catch (err) {
       setError('Failed to fetch recipe details');
       console.error(err);
@@ -50,8 +57,9 @@ const RecipeFetcher = ({ onFavorite, favorites }) => {
     }
   };
 
-  const handleViewRecipe = (recipeId) => {
-    fetchRecipeDetails(recipeId);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedRecipe(null);
   };
 
   return (
@@ -124,24 +132,11 @@ const RecipeFetcher = ({ onFavorite, favorites }) => {
         })}
       </div>
 
-      {selectedRecipe && (
-        <div className="mt-8 p-6 bg-white shadow-lg rounded-lg">
-          <h3 className="text-2xl font-bold mb-4">{selectedRecipe.title}</h3>
-          <img
-            src={selectedRecipe.image}
-            alt={selectedRecipe.title}
-            className="w-full h-72 object-cover mb-4 rounded-lg"
-          />
-          <h4 className="font-semibold text-lg">Ingredients:</h4>
-          <ul className="list-disc pl-5 mb-4">
-            {selectedRecipe.extendedIngredients.map((ingredient) => (
-              <li key={ingredient.id}>{ingredient.original}</li>
-            ))}
-          </ul>
-          <h4 className="font-semibold text-lg">Instructions:</h4>
-          <p>{selectedRecipe.instructions}</p>
-        </div>
-      )}
+      <RecipeModal 
+        recipe={selectedRecipe} 
+        isOpen={isModalOpen} 
+        onClose={handleCloseModal} 
+      />
     </div>
   );
 };
