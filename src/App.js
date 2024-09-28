@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import RecipeFetcher from './components/RecipeFetcher';
 import Favorites from './components/Favorites';
-import RecipeDetails from './components/RecipeDetails';
+import RecipeModal from './components/RecipeModal';
 import { loadFavorites, saveFavorites } from './utils/localStorageUtils';
 import './styles/App.css';
 
 function App() {
     const [favorites, setFavorites] = useState(loadFavorites());
     const [selectedRecipe, setSelectedRecipe] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const addToFavorites = (recipe) => {
         const updatedFavorites = [...favorites, recipe];
@@ -23,25 +24,34 @@ function App() {
 
     const handleSelectRecipe = (recipe) => {
         setSelectedRecipe(recipe);
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setSelectedRecipe(null);
     };
 
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div className="flex flex-col min-h-screen bg-gray-100 ">
             <div className="flex-grow">
                 <RecipeFetcher
                     onFavorite={addToFavorites}
-                    favorites={favorites} // Pass the favorites array
+                    favorites={favorites}
+                    onSelectRecipe={handleSelectRecipe}
                 />
-                
-                {selectedRecipe && (
-                    <RecipeDetails recipe={selectedRecipe} />
-                )}
             </div>
 
             <Favorites
                 favorites={favorites}
                 onSelectRecipe={handleSelectRecipe}
-                onRemoveFromFavorites={removeFromFavorites} // Pass the remove function
+                onRemoveFromFavorites={removeFromFavorites}
+            />
+
+            <RecipeModal 
+                recipe={selectedRecipe} 
+                isOpen={isModalOpen} 
+                onClose={closeModal} 
             />
         </div>
     );
