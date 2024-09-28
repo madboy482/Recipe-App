@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const API_KEY = '8b5c995bb3554bb7be1c20f7bf396ead';
+const API_KEY = '580e029754ea4445846f4c514a2f4657';
 
 const RecipeFetcher = ({ onFavorite, favorites }) => {
   const [recipes, setRecipes] = useState([]);
